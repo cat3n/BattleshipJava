@@ -47,6 +47,8 @@ public class ShipsCreation extends JPanel{
                 // Add an action listener to the button with the current ship
                 //button.addActionListener(createActionListener(currentShip));
 
+                // Add the button to the ShipsCreation panel
+                //add(button);
 
             }
 
@@ -57,15 +59,15 @@ public class ShipsCreation extends JPanel{
      private void initializeContainer(){
 
         // Call initializeShips to ensure ships are initialized
-       // initializeShips();
-        ships = player.getPlayerShips();
+        initializeShips();
+
 
         //Initialize ships container
         shipsContainer = new ShipsContainer[5];
         containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
 
-         // Initialize each element of the container array Panel
+         // Initialize each element of the container array
          for (int i = 0; i < container.length; i++) {
              container[i] = new JPanel();
              container[i].setLayout(new BoxLayout(container[i], BoxLayout.X_AXIS));
@@ -84,9 +86,8 @@ public class ShipsCreation extends JPanel{
             // Loop through each button in the ship
             for (int j = 0; j < shipButtons.length; j++) {
                 // Get the button from the ship
-                shipButtons[j] = sbutton;
-                sbutton.setBackground(Color.GRAY);
-                sbutton.addActionListener(createActionListener());
+                sbutton = shipButtons[j];
+                sbutton.addActionListener(createActionListener(currentShip));
                 // Add the button to the container
                 container[i].add(sbutton);
             }
@@ -108,7 +109,7 @@ public class ShipsCreation extends JPanel{
     }
 
 
-    private ActionListener createActionListener() {
+    private ActionListener createActionListener(Ship currentShip) {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -117,9 +118,9 @@ public class ShipsCreation extends JPanel{
                 // Set the ship buttons to yellow
                 JButton[] shipButtons = currentShip.getShipButtons();
 
-                clickedButton.setBackground(Color.YELLOW);
+                currentShip.setShipButtonsColor(Color.YELLOW);
                 // Set other ships' buttons to gray and clickable
-                setButtonsClickableForOtherShips(clickedButton);
+                setButtonsClickableForOtherShips(currentShip);
                 // Set the current ship
                 setCurrentShip(currentShip);
 
@@ -128,18 +129,15 @@ public class ShipsCreation extends JPanel{
     }
 
 
-    private void setButtonsClickableForOtherShips(JButton clickedButton) {
+    private void setButtonsClickableForOtherShips(Ship currentShip) {
         // Loop through each ship
-        JButton[] currentButton = new JButton[ships.length];
         for (int i = 0; i < ships.length; i++) {
-           /* Ship ship = ships[i];
+            Ship ship = ships[i];
             // Check if the ship is not the current ship
             if (ship != currentShip) {
                 // Reset other ships' buttons to gray
                 ship.setShipButtonsColor(Color.GRAY);
-            }*/
-            clickedButton = currentButton[i];
-            if (clickedButton != )
+            }
         }
         revalidate();
         repaint();
