@@ -18,6 +18,7 @@ public class Ship extends JPanel {
         this.shipLength = shipLength; // Set the ship length
         initializeBlocks(shipLength);
 
+
     }
 
     private void initializeBlocks(int shipLength) {
@@ -28,7 +29,7 @@ public class Ship extends JPanel {
             button.setMaximumSize(new Dimension(45, 40));
             button.setBackground(Color.GRAY); // Set the background color to gray
             shipBlocks[i] = button;
-            add(button);
+            //add(button);
 
         }
     }

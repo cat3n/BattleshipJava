@@ -60,7 +60,6 @@ public class NameInputDialog extends JFrame {
                     // Update the title of the JFrame with the player's name
                     //PlayerSetUp.player.setTitle(playerName + "'s Board");
 
-
                     callback.onPlayerNameEntered(playerName);
 
                     dispose();

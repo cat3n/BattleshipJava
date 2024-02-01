@@ -8,9 +8,12 @@ import java.util.List;
 public class ShipsCreation extends JPanel{
 
     private Ship[] ships;
+    private Ship[] display;
     private Player player;
     private PlayerSetUp playerSetUp = new PlayerSetUp();
+    private PlayerBoard playerBoard;
     private ShipsContainer[] shipsContainer ;
+    private boolean active;
 
     private ShipsContainer currentContainer;
     private JPanel containerPanel;
@@ -19,8 +22,10 @@ public class ShipsCreation extends JPanel{
     private JButton[] containerButtons;
     private JButton cbutton;
     private JButton[] shipButtons;
+    private JButton[] activeButtons;
     private JButton sbutton;
     private  Ship currentShip;
+    private Ship displayedShip;
 
     public ShipsCreation(Player player){
         this.player = player;
@@ -34,22 +39,29 @@ public class ShipsCreation extends JPanel{
 
         ships = player.getPlayerShips();
 
+        // Initialize display array
+        display = new Ship[5];
+        // Create instances of ships with different lengths
+
+        display[0] = new Ship(5);
+        display[1] = new Ship(4);
+        display[2] = new Ship(3);
+        display[3] = new Ship(3);
+        display[4] = new Ship(2);
+
+
         // Loop through each ship
         for (int i = 0; i < 5; i++) {
-            Ship currentShip = ships[i];
+            Ship displayedShip = display[i];
 
             // Loop through each button in the ship
-            for(int j =0; j< currentShip.getShipButtons().length; j++ ){
-
+            for(int j = 0; j< displayedShip.getShipButtons().length; j++ ){
                 // Get the button from the current ship
-                JButton button = currentShip.getShipButtons()[j];
-
+                JButton button = displayedShip.getShipButtons()[j];
                 // Add an action listener to the button with the current ship
                 //button.addActionListener(createActionListener(currentShip));
-
                 // Add the button to the ShipsCreation panel
                 //add(button);
-
             }
 
         }
@@ -76,20 +88,21 @@ public class ShipsCreation extends JPanel{
 
 
         //for every ship / container
-        for (int i = 0; i < ships.length; i++) {
+        for (int i = 0; i < display.length; i++) {
             shipsContainer[i] = new ShipsContainer();
             ShipsContainer currentContainer = shipsContainer[i];
             containerButtons = currentContainer.getContainerButtons();
 
-            Ship currentShip = ships[i];
-            shipButtons = currentShip.getShipButtons();
+            currentShip = ships[i];
+            activeButtons = currentShip.getShipButtons();
             // Loop through each button in the ship
+            displayedShip = display[i];
+            shipButtons = displayedShip.getShipButtons();
             for (int j = 0; j < shipButtons.length; j++) {
                 // Get the button from the ship
-                sbutton = shipButtons[j];
-                sbutton.addActionListener(createActionListener(currentShip));
+                shipButtons[j].addActionListener(createActionListener(displayedShip,currentShip));
                 // Add the button to the container
-                container[i].add(sbutton);
+                container[i].add(shipButtons[j]);
             }
 
             // Add remaining container buttons if any
@@ -102,39 +115,63 @@ public class ShipsCreation extends JPanel{
         }
         // Add the container panel to the ShipsCreation panel
         add(containerPanel);
+         System.out.println("dis: " + displayedShip);
+         System.out.println("curr: " + currentShip);
     }
 
     public void updateShipPlacement(Ship currentShip, boolean isPlaced) {
         currentShip.setPlaced(isPlaced);
     }
 
+  /*  public boolean isActive(){
 
-    private ActionListener createActionListener(Ship currentShip) {
+        for( int i =0; i<ships.length; i++) {
+            currentShip = ships[i];
+            // Set the current ship
+        }
+        setCurrentShip(currentShip);
+        return active;
+    }*/
+
+   /* public void setActive(boolean active){
+        this.active = active;
+    }*/
+
+
+    private ActionListener createActionListener(Ship displayedShip, Ship currentShip) {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Get the clicked button
                 JButton clickedButton = (JButton) e.getSource();
                 // Set the ship buttons to yellow
-                JButton[] shipButtons = currentShip.getShipButtons();
+                //JButton[] shipButtons = currentShip.getShipButtons();
 
-                currentShip.setShipButtonsColor(Color.YELLOW);
+                displayedShip.setShipButtonsColor(Color.YELLOW);
                 // Set other ships' buttons to gray and clickable
-                setButtonsClickableForOtherShips(currentShip);
-                // Set the current ship
+                setButtonsClickableForOtherShips(displayedShip);
+                //set the displayed ship as active
+                //setActive(true);
                 setCurrentShip(currentShip);
+                // Provide the updated current ship to PlayerBoard
+                PlayerBoard playerBoard = playerSetUp.getPlayerBoard();
+                if (playerBoard != null) {
+                    playerBoard.setCurrentShip(getCurrentShip());
+                }
+
+
 
             }
         };
     }
 
 
-    private void setButtonsClickableForOtherShips(Ship currentShip) {
+    private void setButtonsClickableForOtherShips(Ship displayedShip) {
         // Loop through each ship
-        for (int i = 0; i < ships.length; i++) {
-            Ship ship = ships[i];
+        for (int i = 0; i < display.length; i++) {
+            Ship ship = display[i];
             // Check if the ship is not the current ship
-            if (ship != currentShip) {
+            if (ship != displayedShip) {
                 // Reset other ships' buttons to gray
                 ship.setShipButtonsColor(Color.GRAY);
             }
@@ -165,12 +202,25 @@ public class ShipsCreation extends JPanel{
         this.ships = ships;
     }
 
+    public Ship[] getDisplayShips(){
+        return display;
+    }
+    public void setDisplayShips(Ship[] display){
+        this.display=display;
+    }
+
     public ShipsContainer[] getShipsContainer(){
         return shipsContainer;
     }
 
     public void setShipsContainer(ShipsContainer[] shipsContainer){
         this.shipsContainer = shipsContainer;
+    }
+    public Ship getDisplayedShip(){
+        return  displayedShip;
+    }
+    public void setDisplayedShip(Ship display) {
+        displayedShip = display;
     }
     public void setCurrentShip(Ship ship) {
         currentShip = ship;
@@ -199,6 +249,14 @@ public class ShipsCreation extends JPanel{
     }
     public void setContButtonsFromPanel(JButton cbutton){
         this.cbutton = cbutton;
+    }
+
+    public void setPlayerBoard(PlayerBoard playerBoard) {
+        this.playerBoard = playerBoard;
+    }
+
+    public PlayerBoard getPlayerBoard(){
+        return playerBoard;
     }
 
 

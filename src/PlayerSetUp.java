@@ -134,4 +134,7 @@ public class PlayerSetUp extends JFrame implements PlayerSetUpCallback{
     public void onPlayerNameEntered(String playerName) {
         gameBoard();
     }
+    public PlayerBoard getPlayerBoard(){
+        return playerBoard;
+    }
 }

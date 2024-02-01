@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 public class PlayerBoard extends JPanel {
     private  JButton[][] pb;
     private ShipState[][] playerBoardState;
+
+
     private int rows;
     private int cols;
     private ShipsCreation shipsCreation;
@@ -50,10 +52,10 @@ public class PlayerBoard extends JPanel {
         }
     }
 
-    private void updateStateAndBoard(int[][] shipPositions, ShipState newState) {
+    private void updateStateAndBoard(Ship ship, int[][] shipPositions, ShipState newState) {
         for (int i = 0; i < shipPositions.length; ++i) {
             int[] position = shipPositions[i];
-            if (position != null && isValidPosition(position[0], position[1])) {
+            if (position != null && ship == currentShip && isValidPosition(position[0], position[1])) {
                 this.playerBoardState[position[0]][position[1]] = newState;
             }
         }
@@ -88,7 +90,7 @@ public class PlayerBoard extends JPanel {
                     shipPositions = getVerticalShipPositions(ship, e);
                 }
                 if (isValidPlacement(ship, new Point(shipPositions[0][0], shipPositions[0][1]))) {
-                    updateStateAndBoard(shipPositions, ShipState.SHIP_PLACED);
+                    updateStateAndBoard(ship,shipPositions, ShipState.SHIP_PLACED);
                     ship.setPlaced(true);
 
                     currentShip = ship;
@@ -113,11 +115,16 @@ public class PlayerBoard extends JPanel {
                 else{
                     shipPositions = getVerticalShipPositions(ship, e);
                 }
-                if (isValidPreview(shipPositions)) {
-                    updateStateAndBoard(shipPositions, ShipState.PREVIEW);
-                } else {
-                    // If preview is invalid, set the state to INVALID (red)
-                    updateStateAndBoard(shipPositions, ShipState.INVALID);
+                if (ship == currentShip) {
+                    if (isValidPreview(shipPositions)) {
+                        updateStateAndBoard(ship, shipPositions, ShipState.PREVIEW);
+                    } else {
+                        // If preview is invalid, set the state to INVALID (red)
+                        updateStateAndBoard(ship, shipPositions, ShipState.INVALID);
+                    }
+                }else {
+                    // If it's not the current ship, clear the preview state
+                    updateStateAndBoard(ship,shipPositions, ShipState.EMPTY);
                 }
 
             }
@@ -139,7 +146,7 @@ public class PlayerBoard extends JPanel {
                 // Check if the ship is placed
                 if (!isShipAlreadyPlaced(shipPositions[0])) {
                     // If the ship is not placed, clear the preview
-                    updateStateAndBoard(shipPositions, ShipState.EMPTY);
+                    updateStateAndBoard(ship,shipPositions, ShipState.EMPTY);
                 } else {
                     // If the ship is placed, clear only the preview state
                     for (int i = 0; i < shipPositions.length; ++i) {
@@ -280,5 +287,9 @@ public class PlayerBoard extends JPanel {
     public void setShipsCreation ( ShipsCreation shipsCreation){
         this.shipsCreation = shipsCreation;
     }
+    public void setCurrentShip(Ship currentShip) {
+        this.currentShip = currentShip;
+    }
+
 }
 
